@@ -3,7 +3,7 @@ import React from "react";
 
 function Todo(props){
     return (
-        <li className="todo stack-small">
+      <li className="todo stack-small">
       <div className="c-cb">
         <input id={props.id} type="checkbox" defaultChecked={props.completed} />
         <label className="todo-label" htmlFor="todo-0">
