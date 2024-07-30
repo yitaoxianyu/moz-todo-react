@@ -6,9 +6,30 @@ import { useState } from "react";
 import {nanoid} from "nanoid";
 
 
+//对象里面包含三中check方法
+const FILTER_MAP = {
+  All: () => true,
+  Active: (task) => !task.completed,
+  Completed: (task) => task.completed,
+};
+const FILTER_NAMES = Object.keys(FILTER_MAP);
+
 function App(props) {
   const [tasks,setTasks] = useState([]);
-  
+  const [filter,setFilter] = useState("All");
+
+  //获取三个名字用来构成组件 
+  const filterList = FILTER_NAMES.map((name)=> (
+  <FilterButton 
+    key={name} 
+    name={name} 
+    isPressed={name === filter}
+    setFilter={setFilter}
+  />
+  )
+)
+
+
   function Addtask(name){
     const newTask = {id: `todo-${nanoid()}`,completed:false,name:name};
     setTasks([...tasks,newTask]);
@@ -42,7 +63,7 @@ function App(props) {
   setTasks(updatedTasks);
   }
 
-  const taskList = tasks.map(
+  const taskList = tasks.filter(FILTER_MAP[filter]).map(
     (task) => <Todo 
     id={task.id} 
     name={task.name} 
@@ -61,9 +82,7 @@ function App(props) {
       <h1>TodoMatic</h1>
       <Form onSubmit={Addtask}/>
       <div className="filters btn-group stack-exception">  
-      <FilterButton />
-      <FilterButton />
-      <FilterButton />  
+      {filterList}
       </div>
       <h2 id="list-heading">{headingText}</h2>
       <ul
