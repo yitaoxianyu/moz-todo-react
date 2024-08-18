@@ -17,7 +17,22 @@ const FILTER_NAMES = Object.keys(FILTER_MAP);
 function App(props) {
   const [tasks,setTasks] = useState([]);
   const [filter,setFilter] = useState("All");
+  const[editCount,setCount] = useState(0);
 
+  //使用异步
+  //从服务器拉取任务列表
+  useEffect(() => {fetch("http://localhost:8080/todo").then(
+    (res) =>{return res.json()} //解析json串也很耗时所以也需要异步
+  ).then(
+    (todos) =>{
+      setTasks(todos)
+    }
+  )}
+  ,[editCount]//页面刷新才显示任务
+  )
+
+  
+  
   //获取三个名字用来构成组件 
   const filterList = FILTER_NAMES.map((name)=> (
   <FilterButton 
@@ -31,36 +46,24 @@ function App(props) {
 
 
   function Addtask(name){
-    const newTask = {id: `todo-${nanoid()}`,completed:false,name:name};
-    setTasks([...tasks,newTask]);
+    //请求后端进行添加
+    fetch("http://localhost:8080/todo/add?name=" + name + "&isComplete=false",{method:"post"}).then(alert("添加成功r"))
+    setCount(editCount + 1);
   }
   
   function deleteTask(id) {
-    const remainingTask = tasks.filter((task)=> id != task.id);
-    setTasks(remainingTask);
+    fetch("http://localhost:8080/todo/delete?id=" + id).then(alert("删除成功"))
+    setCount(editCount + 1);
   }
 
   function editTask(id, newName){
-    const editedTaskList = tasks.map((task)=>{
-      if(id == task.id){
-        return {...task,name : newName}
-      }
-      return task
-    }
-   )
-   setTasks(editedTaskList);
+    fetch("http://localhost:8080/todo/edit?id=" + id + "&newName=" + newName).then(alert("修改成功"))
+    setCount(editCount + 1);
   }
 
   function toggleTaskCompleted(id){
-    const updatedTasks = tasks.map((task)=> {
-      if(task.id == id){
-        //进行修改
-        return {...task,completed:!task.completed};
-      }
-      return task;
-    }
-  )
-  setTasks(updatedTasks);
+   fetch("http://localhost:8080/todo/toggle?id=" + id).then(alert("修改成功")).catch((error) =>{console.log(error)})
+   setCount(editCount + 1);
   }
 
   const taskList = tasks.filter(FILTER_MAP[filter]).map(
