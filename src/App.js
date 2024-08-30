@@ -68,8 +68,8 @@ function App(props) {
 
   const taskList = tasks.filter(FILTER_MAP[filter]).map(
     (task) => <Todo 
-    id={task.id} 
     name={task.name} 
+    id={task.id} 
     completed={task.completed} 
     key={task.id}
     toggleTaskCompleted={toggleTaskCompleted}
